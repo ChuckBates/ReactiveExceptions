@@ -1,0 +1,35 @@
+﻿@using System.Reactive.Linq
+@using System.Reactive.Subjects
+@using ReactiveExceptions.Shared
+@page "/reactiveException1"
+
+<h1>Reactive Exceptions</h1>
+
+<p>This is to display the exception handling in Reactive Extentions</p>
+
+<button class="btn btn-primary" onclick="@Invoke">Click me to invoke</button>
+
+@functions {
+
+    void Invoke()
+    {
+        var subject = Subject.Synchronize(new Subject<PropClass>());
+        subject
+            .Buffer(1)
+            .Subscribe(Throw);
+
+        subject.OnNext(new PropClass("name"));
+    }
+
+    void Throw(IList<PropClass> props)
+    {
+        try
+        {
+            throw new Exception(props.First().Name);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("inner thrown " + e);
+        }
+    }
+}
